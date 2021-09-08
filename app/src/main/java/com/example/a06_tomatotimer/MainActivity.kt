@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                     if(fromUser){
-                    updateRemainTimes(progress*60*1000L)}
+                        updateRemainTimes(progress*60*1000L) }
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -68,11 +68,22 @@ class MainActivity : AppCompatActivity() {
                     tickingSoundId?.let {
                         soundPool.stop(it)
                     }
+                    soundPool.autoPause()
                 }
 
                 override fun onStopTrackingTouch(seekBar:  SeekBar?){
                     seekBar ?:return
-                    startCountDown()
+                    if(seekBar.progress == 0){
+                        currenCountDownTimer?.cancel()
+                        currenCountDownTimer = null
+                        tickingSoundId?.let {
+                            soundPool.stop(it)
+                        }
+                        soundPool.autoPause()
+
+                    }else{
+                        startCountDown()
+                    }
                 }
             }
         )
@@ -109,7 +120,7 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     private fun updateRemainTimes(remainMillis: Long){
         val remainSeconds = remainMillis/1000
-        remainMinutesTextView.text = "%02d".format(remainSeconds/60)
+        remainMinutesTextView.text = "%02d'".format(remainSeconds/60)
         remainSecondsTextView.text = "%02d".format(remainSeconds%60)
     }
     private fun updateSeekBar(remainMillis: Long){
